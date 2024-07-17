@@ -1,34 +1,42 @@
-# Este es un programa para calcular el promedio de notas
+import random
 
-def calcular_promedio(notas):
-    suma = 0
-    for i in range(0, len(notas)):
-        suma += notas[i]
-    promedio = suma / len(notas)
-    return promedio
+opciones = ["piedra", "papel", "tijeras"]
 
+def jugar():
+    puntaje_jugador = 0
+    puntaje_computadora = 0
+    
+    while True:
+        eleccion_jugador = input("Elige piedra, papel o tijeras (o 'q' para salir): ").lower()
+        if eleccion_jugador == 'q':
+            break
+        
+        if not eleccion_jugador in opciones:
+            print("Opción inválida. Intenta de nuevo.")
+            continue
+        
+        eleccion_computadora = random.choice(opciones)
+        print("La computadora eligió: " + eleccion_computadora)
+        
+        if eleccion_jugador == eleccion_computadora:
+            print("Empate!")
+        elif eleccion_jugador == "piedra" and eleccion_computadora == "tijeras" or \
+             eleccion_jugador == "papel" and eleccion_computadora == "piedra" or \
+             eleccion_jugador == "tijeras" and eleccion_computadora == "papel":
+            print("Ganaste!")
+            puntaje_jugador = puntaje_jugador + 1
+        else:
+            print("Perdiste!")
+            puntaje_computadora += 1
+        
+        print("Puntaje - Jugador: " + str(puntaje_jugador) + ", Computadora: " + str(puntaje_computadora))
 
-def imprimir_resultado(promedio):
-    if promedio >= 6:
-        print("Aprobado")
-    elif promedio >= 4:
-        print("Recuperación")
+    print("Puntaje final - Jugador: %d, Computadora: %d" % (puntaje_jugador, puntaje_computadora))
+    if puntaje_jugador > puntaje_computadora:
+        print("¡Felicidades, ganaste el juego!")
+    elif puntaje_jugador < puntaje_computadora:
+        print("Lo siento, perdiste el juego.")
     else:
-        print("Reprobado")
+        print("El juego terminó en empate.")
 
-
-
-notas = []
-while True:
-    nota = input("Ingrese una nota (o 'q' para terminar): ")
-    if nota == 'q':
-        break
-    notas.append(float(nota))
-
-promedio = calcular_promedio(notas)
-print("El promedio es: " + str(promedio))
-imprimir_resultado(promedio)
-
-a = 10
-b = "20"
-c = a + b
+jugar()
