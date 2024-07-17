@@ -1,42 +1,57 @@
-import random
+using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
 
-opciones = ["piedra", "papel", "tijeras"]
+public class GameManager : MonoBehaviourPunCallbacks
+{
+    [SerializeField]
+    private GameObject playButton;
 
-def jugar():
-    puntaje_jugador = 0
-    puntaje_computadora = 0
-    
-    while True:
-        eleccion_jugador = input("Elige piedra, papel o tijeras (o 'q' para salir): ").lower()
-        if eleccion_jugador == 'q':
-            break
-        
-        if not eleccion_jugador in opciones:
-            print("Opción inválida. Intenta de nuevo.")
-            continue
-        
-        eleccion_computadora = random.choice(opciones)
-        print("La computadora eligió: " + eleccion_computadora)
-        
-        if eleccion_jugador == eleccion_computadora:
-            print("Empate!")
-        elif eleccion_jugador == "piedra" and eleccion_computadora == "tijeras" or \
-             eleccion_jugador == "papel" and eleccion_computadora == "piedra" or \
-             eleccion_jugador == "tijeras" and eleccion_computadora == "papel":
-            print("Ganaste!")
-            puntaje_jugador = puntaje_jugador + 1
-        else:
-            print("Perdiste!")
-            puntaje_computadora += 1
-        
-        print("Puntaje - Jugador: " + str(puntaje_jugador) + ", Computadora: " + str(puntaje_computadora))
+    private void Start()
+    {
+        // Asegurarse de que el botón esté desactivado al inicio
+        playButton.SetActive(false);
+    }
 
-    print("Puntaje final - Jugador: %d, Computadora: %d" % (puntaje_jugador, puntaje_computadora))
-    if puntaje_jugador > puntaje_computadora:
-        print("¡Felicidades, ganaste el juego!")
-    elif puntaje_jugador < puntaje_computadora:
-        print("Lo siento, perdiste el juego.")
-    else:
-        print("El juego terminó en empate.")
+    private void Update()
+    {
+        // Activar el botón de jugar solo si es el cliente maestro y hay 2 jugadores
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        {
+            playButton.SetActive(true);
+        }
+        else
+        {
+            playButton.SetActive(false);
+        }
+    }
 
-jugar()
+    public void OnClickPlayButton()
+    {
+        // Verificar si el cliente que hace clic es el maestro
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // Cargar el nivel del juego principal para todos los clientes
+            PhotonNetwork.LoadLevel("MainGame");
+        }
+        else
+        {
+            Debug.LogWarning("Solo el cliente maestro puede iniciar el juego.");
+        }
+    }
+
+    // Método opcional para manejar cambios en la sala
+    public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
+    {
+        base.OnRoomPropertiesUpdate(propertiesThatChanged);
+        // Aquí puedes manejar cambios en las propiedades de la sala si es necesario
+    }
+
+    // Método opcional para manejar la desconexión de jugadores
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        base.OnPlayerLeftRoom(otherPlayer);
+        // Aquí puedes manejar la lógica cuando un jugador abandona la sala
+        playButton.SetActive(false);
+    }
+}
