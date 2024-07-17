@@ -7,6 +7,7 @@ def calcular_promedio(notas):
     promedio = suma / len(notas)
     return promedio
 
+
 def imprimir_resultado(promedio):
     if promedio >= 6:
         print("Aprobado")
@@ -14,6 +15,8 @@ def imprimir_resultado(promedio):
         print("Recuperación")
     else:
         print("Reprobado")
+
+
 
 notas = []
 while True:
